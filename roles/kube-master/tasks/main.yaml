@@ -1,0 +1,34 @@
+---
+
+- name: generate kubeadm config
+  template: 'src={{ item.src }} dest={{ item.dest }} mode=0644'
+  with_items:
+      - {src: '/etc/ansible/roles/kube-master/templates/kubeadm.yaml.j2' , dest: '/root/kube/conf/kubeadm.yaml'}
+
+
+- name: kubeadm init master0
+  shell: 'cd /root/kube/shell && {{ item }}'
+  with_items:
+      - kubeadm init --config ../conf/kubeadm.yaml --ignore-preflight-errors=Port-10252 --ignore-preflight-errors=Port-10251 --ignore-preflight-errors=Port-10250 --ignore-preflight-errors=ExternalEtcdVersion --ignore-preflight-errors=FileAvailable--etc-kubernetes-manifests-etcd.yaml 
+      - rm -rf ~/.kube && mkdir ~/.kube && cp /etc/kubernetes/admin.conf ~/.kube/config
+      - kubectl taint nodes --all node-role.kubernetes.io/master-
+      - kubectl apply -f ../conf/net/
+  when: ( order is defined ) and ( order == 1 )
+
+- name: fetch kube pki
+  fetch: 'src=/etc/kubernetes/pki/{{ item }} dest=/tmp/ mode=0644 flat=yes'
+  with_items: '{{ k8s_crts }}'
+  when: ( order is defined ) and ( order == 1 )
+
+- name: send k8s cert to  masters
+  copy: 'src=/tmp/{{ item }} dest=/etc/kubernetes/pki/{{ item }} mode=0644'
+  with_items: '{{ k8s_crts }}'
+  when: ( order is defined ) and ( order != 1 )
+
+- name: kubeadm init other masters
+  shell: 'cd /root/kube/shell && {{ item }}'
+  with_items:
+      - kubeadm init --config ../conf/kubeadm.yaml --ignore-preflight-errors=Port-10250 --ignore-preflight-errors=ExternalEtcdVersion --ignore-preflight-errors=FileAvailable--etc-kubernetes-manifests-etcd.yaml 
+      - kubectl taint nodes --all node-role.kubernetes.io/master- || true
+      - rm -rf ~/.kube && mkdir ~/.kube && cp /etc/kubernetes/admin.conf ~/.kube/config
+  when: ( order is defined ) and ( order != 1 )
