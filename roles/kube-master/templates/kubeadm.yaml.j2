@@ -33,5 +33,5 @@ apiServerExtraArgs:
     etcd-certfile: /etc/kubernetes/pki/cfssl/client.pem
     etcd-keyfile: /etc/kubernetes/pki/cfssl/client-key.pem 
     service-node-port-range: 6-33000
-    insecure-bind-address: {{ ansible_default_ipv4.address }}
+    insecure-bind-address: {{ inventory_hostname }}
     insecure-port: "8999"
