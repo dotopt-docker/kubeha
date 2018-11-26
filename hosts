@@ -1,16 +1,3 @@
-# This is the default ansible 'hosts' file.
-#
-# It should live in /etc/ansible/hosts
-#
-#   - Comments begin with the '#' character
-#   - Blank lines are ignored
-#   - Groups of hosts are delimited by [header] elements
-#   - You can enter hostnames or ip addresses
-#   - A hostname/ip can be a member of multiple groups
-
-# Ex 1: Ungrouped hosts, specify before any group headers.
-
-# using static pod to start haproxy, so kubelet must run on those nodes, you can use master node
 [k8s-master]
 10.1.86.204 name=node01 order=1 role=master lb=MASTER lbname=lbmaster priority=100
 10.1.86.205 name=node02 order=2 role=master lb=BACKUP lbname=lbbackup priority=80

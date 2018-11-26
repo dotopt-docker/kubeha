@@ -1,11 +1,5 @@
 # kubeha
 
-## usage
-
-```bash
-docker run --rm -v /data/kube1.11.3.tar.gz:/data/kube1.11.3.tar.gz  -v /root/.ssh/:/root/.ssh/ -it -w /etc/ansible kubeha:1.11.3 bash
-```
-
 ## ssh setting on all hosts
 
 ```bash
@@ -17,7 +11,6 @@ docker run --rm -v /data/kube1.11.3.tar.gz:/data/kube1.11.3.tar.gz  -v /root/.ss
 Config your own hosts
 
 ```bash
-cd /etc/ansible
 vim hosts
 ```
 
@@ -29,4 +22,10 @@ ansible-playbook roles/install-all.yaml
 
 ```bash
 ansible-playbook roles/uninstall-all.yaml
+```
+
+## usage
+
+```bash
+docker run --rm -v $(pwd):/data/kube1.11.3.tar.gz -v $(pwd)/hosts:/etc/ansible/hosts  -v /root/.ssh/:/root/.ssh/ -it kubeha:1.11.3 bash
 ```
