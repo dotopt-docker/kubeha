@@ -30,6 +30,12 @@ spec:
     - --peer-trusted-ca-file=/etc/kubernetes/pki/etcd/ca.pem
     - --snapshot-count=10000
     - --trusted-ca-file=/etc/kubernetes/pki/etcd/ca.pem
+    env:
+      - name: ETCDCTL_API
+        value: "3"
+      - name: ETCDCMD
+        value: "etcdctl --endpoints=https://[{{ inventory_hostname }}]:2379 --cacert=/etc/kubernetes/pki/etcd/ca.pem
+                --cert=/etc/kubernetes/pki/etcd/client.pem --key=/etc/kubernetes/pki/etcd/client-key.pem"
     image: k8s.gcr.io/etcd-amd64:3.2.18
     imagePullPolicy: IfNotPresent
     livenessProbe:
